@@ -2,7 +2,7 @@
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "be7c6532fcd08dfbca3d482d6c7f33aa0293ff80"
+project_hash = "329a2ba7874d85a0c568a962eba63f2c5b82f1b7"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -96,6 +96,16 @@ version = "0.10.2+0"
 [[deps.Homework1]]
 path = "../Homework1"
 uuid = "4682b56a-366d-42ed-a8b7-1d5c66e7e2d5"
+version = "0.1.0"
+
+[[deps.Homework2]]
+path = "../Homework2"
+uuid = "476b2937-b8c0-4665-a3af-65186f9ed503"
+version = "0.1.0"
+
+[[deps.Homework3]]
+path = "../Homework3"
+uuid = "5a6fc9e8-1e98-4dc9-8fbf-9457733587a4"
 version = "0.1.0"
 
 [[deps.IOCapture]]

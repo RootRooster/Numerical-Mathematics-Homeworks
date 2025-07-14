@@ -1,13 +1,15 @@
 using Documenter
 using Homeworks
 using Homework1
+using Homework2
+using Homework3
 
 makedocs(
   sitename="Homeworks Documentation",
   pages=[
     "Overview" => "index.md",
   ],
-  modules=[Homeworks, Homework1]
+  modules=[Homeworks, Homework1, Homework2, Homework3]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
