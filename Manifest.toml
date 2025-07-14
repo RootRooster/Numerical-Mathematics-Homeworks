@@ -94,16 +94,19 @@ uuid = "528830af-5a63-567c-a44a-034ed33b8444"
 version = "0.10.2+0"
 
 [[deps.Homework1]]
+deps = ["Test"]
 path = "Homework1"
 uuid = "4682b56a-366d-42ed-a8b7-1d5c66e7e2d5"
 version = "0.1.0"
 
 [[deps.Homework2]]
+deps = ["Test"]
 path = "Homework2"
 uuid = "476b2937-b8c0-4665-a3af-65186f9ed503"
 version = "0.1.0"
 
 [[deps.Homework3]]
+deps = ["Test"]
 path = "Homework3"
 uuid = "5a6fc9e8-1e98-4dc9-8fbf-9457733587a4"
 version = "0.1.0"
