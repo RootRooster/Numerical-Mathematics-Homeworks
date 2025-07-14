@@ -8,10 +8,7 @@ makedocs(
     edit_link="main",
     prettyurls=get(ENV, "CI", nothing) == "true",
   ),
-  pages=[  # Your doc pages
-    "Home" => "index.md",
-    # Add more pages like "Homework 1" => "homework1.md"
-  ],
+  pages=["index.md"],
   modules=[Homeworks, Homework1]
 )
 
