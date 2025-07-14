@@ -25,6 +25,7 @@ deploydocs(
   repo="github.com/RootRooster/Numerical-Mathematics-Homeworks",  # Your repo URL (no https://)
   devbranch="main",  # Branch where your source code lives
   target="build",  # Where built HTML goes (default)
-  push_preview=true  # Optional: Support PR previews
+  push_preview=true,  # Optional: Support PR previews
+  deploy_config=Documenter.GitHubActions()
 )
 

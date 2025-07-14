@@ -2,9 +2,9 @@ name: Documenter
 
 on:
   push:
-    branches: [homework_1]  # Your dev branch
+    branches: [main]  # Your dev branch
   pull_request:
-    branches: [homework_1]
+    branches: [main]
 
 permissions:
   contents: write
