@@ -1,10 +1,13 @@
 using Documenter
 using Homeworks
+using Homework1
 
 makedocs(
-    sitename = "Homeworks",
-    format = Documenter.HTML(),
-    modules = [Homeworks]
+  sitename="Homeworks Documentation",
+  format=Documenter.HTML(
+    edit_link="homework_1"
+  ),
+  modules=[Homeworks, Homework1]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
