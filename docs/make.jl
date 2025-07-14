@@ -5,7 +5,7 @@ using Homework1
 makedocs(
   sitename="Homeworks Documentation",
   format=Documenter.HTML(
-    edit_link="homework_1",
+    edit_link="main",
     prettyurls=get(ENV, "CI", nothing) == "true",
   ),
   pages=[  # Your doc pages
@@ -23,7 +23,7 @@ makedocs(
 )=#
 deploydocs(
   repo="github.com/RootRooster/Numerical-Mathematics-Homeworks",  # Your repo URL (no https://)
-  devbranch="homework_1",  # Branch where your source code lives
+  devbranch="main",  # Branch where your source code lives
   target="build",  # Where built HTML goes (default)
   push_preview=true  # Optional: Support PR previews
 )
