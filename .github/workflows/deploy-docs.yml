@@ -2,9 +2,10 @@ name: Documenter
 
 on:
   push:
-    branches: [main]  # Your dev branch
+    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
