@@ -10,6 +10,4 @@ Tests is a testing package in Julia.
 ### Documenter && DocumenterTools
 These two packages come as a bundle for generating documentation. Usage is quite simple:
  - write some well documented code
- - run `julia`
- - run `using DocumenterTools`
- - run `DocumenterTools.generate()`
+ - run `julia --project=.. make.jl` inside the `doc` folder
