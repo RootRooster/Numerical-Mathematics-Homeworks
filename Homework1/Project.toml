@@ -4,7 +4,9 @@ authors = ["Nik <62603376+RootRooster@users.noreply.github.com>"]
 version = "0.1.0"
 
 [deps]
+LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+LanguageServer = "4.5.1"
 Test = "1.11.0"

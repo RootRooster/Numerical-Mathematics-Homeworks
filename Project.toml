@@ -9,11 +9,13 @@ DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 Homework1 = "4682b56a-366d-42ed-a8b7-1d5c66e7e2d5"
 Homework2 = "476b2937-b8c0-4665-a3af-65186f9ed503"
 Homework3 = "5a6fc9e8-1e98-4dc9-8fbf-9457733587a4"
+LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 Documenter = "1.14.1"
 DocumenterTools = "0.1.20"
+LanguageServer = "4.5.1"
 Pkg = "1.11.0"
 Test = "1.11.0"
