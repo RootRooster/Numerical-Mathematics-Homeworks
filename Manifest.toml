@@ -2,7 +2,7 @@
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "19b30d908b1abd6e72dd6438aeccab9d9b1fd7de"
+project_hash = "2ad6ce135fe34c8a67e7cbaeca35411471891c34"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -49,13 +49,15 @@ deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "3a3dfb30697e96a440e4149c8c51bf32f818c0f3"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "4.17.0"
+weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
     CompatLinearAlgebraExt = "LinearAlgebra"
 
-    [deps.Compat.weakdeps]
-    Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+[[deps.CompilerSupportLibraries_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "1.1.1+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -135,19 +137,19 @@ uuid = "528830af-5a63-567c-a44a-034ed33b8444"
 version = "0.10.2+0"
 
 [[deps.Homework1]]
-deps = ["Test"]
+deps = ["LanguageServer", "Test"]
 path = "Homework1"
 uuid = "4682b56a-366d-42ed-a8b7-1d5c66e7e2d5"
 version = "0.1.0"
 
 [[deps.Homework2]]
-deps = ["Test"]
+deps = ["LanguageServer", "Test"]
 path = "Homework2"
 uuid = "476b2937-b8c0-4665-a3af-65186f9ed503"
 version = "0.1.0"
 
 [[deps.Homework3]]
-deps = ["Test"]
+deps = ["LanguageServer", "Test"]
 path = "Homework3"
 uuid = "5a6fc9e8-1e98-4dc9-8fbf-9457733587a4"
 version = "0.1.0"
@@ -233,6 +235,11 @@ git-tree-sha1 = "be484f5c92fad0bd8acfef35fe017900b0b73809"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
 version = "1.18.0+0"
 
+[[deps.LinearAlgebra]]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+version = "1.11.0"
+
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
@@ -264,6 +271,11 @@ version = "2023.12.12"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.OpenBLAS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.27+1"
 
 [[deps.OpenSSH_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "OpenSSL_jll", "Zlib_jll"]
@@ -418,6 +430,11 @@ version = "1.11.0"
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
 version = "1.2.13+1"
+
+[[deps.libblastrampoline_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.11.0+0"
 
 [[deps.libsass_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
