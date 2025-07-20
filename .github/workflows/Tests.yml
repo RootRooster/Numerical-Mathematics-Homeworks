@@ -40,7 +40,20 @@ jobs:
       - name: Cache artifacts
         uses: julia-actions/cache@v2
 
-      # 4. Build package (Installs main AND test dependencies)
+      # 4.1. Instantiate  
+      - name: Develop local sub-projects
+        shell: julia --project -e '{0}'
+        run: |
+          using Pkg;
+          Pkg.develop([
+           PackageSpec(path="."), 
+           PackageSpec(path="Homework1"), 
+           PackageSpec(path="Homework2"), 
+           PackageSpec(path="Homework3")
+          ])
+          Pkg.instantiate();
+
+      # 4.2. Build package (Installs main AND test dependencies)
       - name: Build package
         uses: julia-actions/julia-buildpkg@v1
 
