@@ -39,24 +39,17 @@ jobs:
       # 3. Cache dependencies to speed up builds
       - name: Cache artifacts
         uses: julia-actions/cache@v2
-
-      # 4.1. Instantiate  
-      - name: Develop local sub-projects
-        shell: julia --project -e '{0}'
-        run: |
-          using Pkg;
-          Pkg.develop([
-           PackageSpec(path="."), 
-           PackageSpec(path="Homework1"), 
-           PackageSpec(path="Homework2"), 
-           PackageSpec(path="Homework3")
-          ])
-          Pkg.instantiate();
+        with:
+          project: ${{ matrix.project }}
 
       # 4.2. Build package (Installs main AND test dependencies)
       - name: Build package
         uses: julia-actions/julia-buildpkg@v1
+        with:
+          project: ${{ matrix.project }}
 
       # 5. Run the tests
       - name: Run tests
         uses: julia-actions/julia-runtest@v1
+        with:
+          project: ${{ matrix.project }}
