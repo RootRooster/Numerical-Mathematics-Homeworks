@@ -8,8 +8,12 @@ makedocs(
   sitename="Homeworks Documentation",
   pages=[
     "Overview" => "index.md",
+    "Homework 1" => "homework1.md"
   ],
-  modules=[Homeworks, Homework1, Homework2, Homework3]
+  modules=[Homeworks, Homework1, Homework2, Homework3],
+  format=Documenter.HTML(
+    mathengine=Documenter.MathJax3(),
+  ),
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
