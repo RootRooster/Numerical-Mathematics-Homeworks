@@ -40,10 +40,20 @@ jobs:
       - name: Cache artifacts
         uses: julia-actions/cache@v2
 
-      # 4. Install package dependencies
+      # 4. Install dependencies
+      - name: Install dependencies
+        shell: julia --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.develop(PackageSpec(path="Homework1"))
+          Pkg.develop(PackageSpec(path="Homework2"))
+          Pkg.develop(PackageSpec(path="Homework3"))
+          Pkg.instantiate()
+
+      # 5. Install package dependencies
       - name: Build package
         uses: julia-actions/julia-buildpkg@v1
 
-      # 5. Run the tests
+      # 6. Run the tests
       - name: Run tests
         uses: julia-actions/julia-runtest@v1

@@ -27,9 +27,12 @@ jobs:
       - name: Install dependencies
         shell: julia --color=yes --project=docs {0}
         run: |
-          using Pkg
-          Pkg.develop(PackageSpec(path=pwd()))
-          Pkg.instantiate()
+         using Pkg
+         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework1")))
+         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework2")))
+         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework3")))
+         Pkg.develop(PackageSpec(path=pwd()))
+         Pkg.instantiate()
       - name: Build and deploy
         run: julia --color=yes --project=docs docs/make.jl
         env:
