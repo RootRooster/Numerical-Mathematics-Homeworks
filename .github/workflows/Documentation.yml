@@ -28,9 +28,12 @@ jobs:
         shell: julia --color=yes --project=docs {0}
         run: |
          using Pkg
-         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework1")))
-         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework2")))
-         Pkg.develop(PackageSpec(path=joinpath(pwd(), "Homework3")))
+         Pkg.develop([
+          PackageSpec(path="."), 
+          PackageSpec(path="Homework1"), 
+          PackageSpec(path="Homework2"), 
+          PackageSpec(path="Homework3")
+         ])
          Pkg.develop(PackageSpec(path=pwd()))
          Pkg.instantiate()
       - name: Build and deploy

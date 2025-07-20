@@ -45,9 +45,12 @@ jobs:
         shell: julia --color=yes {0}
         run: |
           using Pkg
-          Pkg.develop(PackageSpec(path="Homework1"))
-          Pkg.develop(PackageSpec(path="Homework2"))
-          Pkg.develop(PackageSpec(path="Homework3"))
+          Pkg.develop([
+            PackageSpec(path="."), 
+            PackageSpec(path="Homework1"), 
+            PackageSpec(path="Homework2"), 
+            PackageSpec(path="Homework3")
+          ])
           Pkg.instantiate()
 
       # 5. Install package dependencies
