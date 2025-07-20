@@ -53,6 +53,7 @@ jobs:
           ])
           Pkg.instantiate()
           Pkg.activate("./test")
+          Pkg.add("Test")
           Pkg.develop([
               PackageSpec(path="."),
               PackageSpec(path="Homework1"),
