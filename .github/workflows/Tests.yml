@@ -44,7 +44,6 @@ jobs:
       - name: Install dependencies
         shell: julia --color=yes {0}
         run: |
-          Pkg.instantiate()
           using Pkg
           Pkg.develop([
             PackageSpec(path="."), 
