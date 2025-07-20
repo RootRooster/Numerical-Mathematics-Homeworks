@@ -44,6 +44,7 @@ jobs:
       - name: Install dependencies
         shell: julia --color=yes {0}
         run: |
+          Pkg.instantiate()
           using Pkg
           Pkg.develop([
             PackageSpec(path="."), 
@@ -52,6 +53,14 @@ jobs:
             PackageSpec(path="Homework3")
           ])
           Pkg.instantiate()
+          Pkg.activate("./test")
+          Pkg.develop([
+            PackageSpec(path=joinpath("..", "Homework1")),
+            PackageSpec(path=joinpath("..", "Homework2")),
+            PackageSpec(path=joinpath("..", "Homework3"))
+          ])
+          Pkg.instantiate()
+          Pkg.activate(".")
 
       # 5. Run the tests
       - name: Run tests
