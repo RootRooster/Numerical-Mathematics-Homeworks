@@ -40,13 +40,13 @@ jobs:
       - name: Cache artifacts
         uses: julia-actions/cache@v2
 
-      # 4. Install dependencies
+      # 4. Install dependencies for main project AND for the test environment
       - name: Install dependencies
         shell: julia --color=yes {0}
         run: |
           using Pkg
+          Pkg.activate(".")
           Pkg.develop([
-            PackageSpec(path="."), 
             PackageSpec(path="Homework1"), 
             PackageSpec(path="Homework2"), 
             PackageSpec(path="Homework3")
@@ -54,9 +54,10 @@ jobs:
           Pkg.instantiate()
           Pkg.activate("./test")
           Pkg.develop([
-            PackageSpec(path=joinpath("..", "Homework1")),
-            PackageSpec(path=joinpath("..", "Homework2")),
-            PackageSpec(path=joinpath("..", "Homework3"))
+              PackageSpec(path="."),
+              PackageSpec(path="Homework1"),
+              PackageSpec(path="Homework2"),
+              PackageSpec(path="Homework3")
           ])
           Pkg.instantiate()
           Pkg.activate(".")
