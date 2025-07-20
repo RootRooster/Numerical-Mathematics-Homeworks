@@ -23,6 +23,10 @@ jobs:
           - macOS-latest
         arch:
           - x64
+        project:
+          - Homework1
+          - Homework2
+          - Homework3
 
     steps:
       # 1. Checkout the repository code
