@@ -53,10 +53,6 @@ jobs:
           ])
           Pkg.instantiate()
 
-      # 5. Install package dependencies
-      - name: Build package
-        uses: julia-actions/julia-buildpkg@v1
-
-      # 6. Run the tests
+      # 5. Run the tests
       - name: Run tests
         uses: julia-actions/julia-runtest@v1
