@@ -88,6 +88,9 @@ function negative(A::RedkaMatrika)
   I = deepcopy(A.I)
   V = deepcopy(A.V)
   n = A.n
+  for row_values in V
+    row_values .= -row_values
+  end
   return RedkaMatrika(V, I, n)
 end
 
