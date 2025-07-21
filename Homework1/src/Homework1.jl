@@ -59,16 +59,16 @@ function getindex(A::RedkaMatrika{T}, i::Int, j::Int) where {T<:Number}
   @boundscheck checkbounds(1:length(A.V), i)
   @boundscheck checkbounds(1:length(A.V), j)
 
-  # Find the column index `j` in the i-th row
-  # Luckily, we had functional programming! ;) this can be done using:
-  idx_in_row = findfirst(isequal(j), A.I[i])
+  # Find the idx value 
+  row_indices = A.I[i]
+  idx = searchsortedfirst(row_indices, j)
 
-  if idx_in_row === nothing
-    # Element is NOT stored
-    return zero(T)
+  if idx <= length(row_indices) && row_indices[idx] == j
+    # Element is a stored non-zero value
+    return A.V[i][idx]
   else
-    # Element is stored
-    return A.V[i][idx_in_row]
+    # Element is not stored, so it's zero
+    return zero(T)
   end
 end
 
