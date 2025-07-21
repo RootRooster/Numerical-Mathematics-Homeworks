@@ -41,24 +41,28 @@ Poišči matriko sistema linearnih enačb za vložitev grafa `G` s fizikalno met
 Argument `sprem` je vektor vozlišč grafa, ki nimajo določenih koordinat.
 Indeksi v matriki `A` ustrezajo vozliščem v istem vrstnem redu,
 kot nastopajo v argumentu `sprem`.
+Vrne matriko tipa RedkaMatrika
 """
-function matrika(G::AbstractGraph, sprem)
+function Rmatrikafy(G::AbstractGraph, sprem)
   # preslikava med vozlišči in indeksi v matriki
   v_to_i = Dict([sprem[i] => i for i in eachindex(sprem)])
-  m = length(sprem)
-  A = zeros(m, m)
-  for i = 1:m
+  n = length(sprem)
+  V_vecs = [Vector{Float64}() for _ in 1:n]
+  I_vecs = [Vector{Int}() for _ in 1:n]
+  for i = 1:n
     vertex = sprem[i]
     sosedi = neighbors(G, vertex)
     for vertex2 in sosedi
       if haskey(v_to_i, vertex2)
         j = v_to_i[vertex2]
-        A[i, j] = 1
+        push!(V_vecs[i], 1.0)
+        push!(I_vecs[i], j)
       end
     end
-    A[i, i] = -length(sosedi)
+    push!(V_vecs[i], -length(sosedi))
+    push!(I_vecs[i], i)
   end
-  return A
+  return RedkaMatrika(V_vecs, I_vecs, n)
 end
 
 """
@@ -114,11 +118,12 @@ Metoda ne vrne ničesar, ampak zapiše izračunane koordinate v matriko `točke`
 function vloži!(G::AbstractGraph, fix, točke)
   sprem = setdiff(vertices(G), fix)
   dim, _ = size(točke)
-  A = RedkaMatrika(matrika(G, sprem))
+  A = Rmatrikafy(G, sprem)
+  neg_A = negative(A)
   for k = 1:dim
     b = desne_strani(G, sprem, točke[k, :])
     x0 = zeros(length(b))
-    x, _ = sor(negative(A), -b, x0, 0.2) # matrika A je negativno definitna
+    x, _ = sor(neg_A, -b, x0, 0.2) # matrika A je negativno definitna
     točke[k, sprem] = x
   end
 end
@@ -148,7 +153,7 @@ println("Plot shranjen v 'docs/src/assets/krozna_lestev_plot.png'")
 
 # Pripravimo sistem iz primera
 sprem = setdiff(vertices(G), fix)
-A = RedkaMatrika(matrika(G, sprem))
+A = Rmatrikafy(G, sprem)
 # Vzamemo prvo koordinato (x)
 b = desne_strani(G, sprem, točke[1, :])
 x0 = zeros(length(b))

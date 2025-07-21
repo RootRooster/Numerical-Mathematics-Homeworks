@@ -154,7 +154,7 @@ Solves the linear system Ax = b using the Successive Over-Relaxation (SOR) itera
 - `Vector`: The computed approximate solution `x`.
 - `Int`: The number of iterations performed.
 """
-function sor(A::RedkaMatrika{T}, b::Vector{T}, x0::Vector{T}, omega::Real; tol::Real=1e-10, max_iter::Int=1000) where {T}
+function sor(A::RedkaMatrika{T}, b::Vector{T}, x0::Vector{T}, omega::Real; tol::Real=1e-10, max_iter::Int=1000) where {T<:Number}
   n = A.n
   if n != length(b) || n != length(x0)
     throw(DimensionMismatch("Dimenzije matrike A ter vektorjev b in x0 se ne ujemajo."))
