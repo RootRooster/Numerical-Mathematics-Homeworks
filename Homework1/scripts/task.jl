@@ -162,9 +162,10 @@ x0 = zeros(length(b))
 omega_values = 0.1:0.1:1.9
 iterations_list = []
 
+neg_A = negative(A)
 for omega in omega_values
   try
-    local x, iterations = sor(negative(A), -b, x0, omega)
+    local x, iterations = sor(neg_A, -b, x0, omega)
     push!(iterations_list, iterations)
   catch
     push!(iterations_list, NaN)  # če ne konvergira
