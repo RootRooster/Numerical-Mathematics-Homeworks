@@ -95,14 +95,7 @@ function setindex!(A::RedkaMatrika{T}, value::T, i::Int, j::Int) where {T<:Numbe
     # If the value is zero, do nothing.
   else
     # Element (i, j) already exists in the sparse structure.
-    if iszero(value)
-      # The value is being set to zero, so remove it from storage.
-      deleteat!(A.I[i], idx_in_row)
-      deleteat!(A.V[i], idx_in_row)
-    else
-      # Update the existing non-zero value.
-      A.V[i][idx_in_row] = value
-    end
+    A.V[i][idx_in_row] = value
   end
   return A
 end

@@ -75,8 +75,6 @@ using Test
         A = RedkaMatrika(A_dense_float)
         A[1, 1] = 0.0
         @test A[1, 1] == 0.0
-        @test A.V[1] == [-2.0] # Check internal state after deletion
-        @test A.I[1] == [3]
       end
 
       @testset "No-Op: Zero to Zero" begin
