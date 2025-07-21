@@ -12,7 +12,7 @@ using Test
     ]
     sparse_A = RedkaMatrika(A_dense)
 
-    @test sparse_A.n == 3
+    @test length(sparse_A.V) == 3
     @test typeof(sparse_A) == RedkaMatrika{Int}
     @test sparse_A.V[1] == [10, -2]
     @test sparse_A.I[1] == [1, 3]

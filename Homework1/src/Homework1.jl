@@ -11,7 +11,6 @@ A custom sparse matrix data type.
 struct RedkaMatrika{T<:Number}
   V::Vector{Vector{T}}   # Stores the non-zero values
   I::Vector{Vector{Int}} # Stores the column indices
-  n::Int                 # Dimension of the matrix (n x n)
 end
 
 """
@@ -38,7 +37,7 @@ function RedkaMatrika(A::Matrix{T}) where {T<:Number}
     end
   end
 
-  return RedkaMatrika(V_vecs, I_vecs, n)
+  return RedkaMatrika(V_vecs, I_vecs)
 end
 
 
@@ -49,7 +48,7 @@ import Base: getindex, setindex!, size, *
 
 Returns the dimensions of the sparse matrix as a tuple (n, n).
 """
-size(A::RedkaMatrika) = (A.n, A.n)
+size(A::RedkaMatrika) = (length(A.V), length(A.V))
 
 """
     getindex(A::RedkaMatrika{T}, i::Int, j::Int) where T
@@ -57,8 +56,8 @@ size(A::RedkaMatrika) = (A.n, A.n)
 Returns the value of the element at position (i, j). Enables `A[i, j]` syntax.
 """
 function getindex(A::RedkaMatrika{T}, i::Int, j::Int) where {T<:Number}
-  @boundscheck checkbounds(1:A.n, i)
-  @boundscheck checkbounds(1:A.n, j)
+  @boundscheck checkbounds(1:length(A.V), i)
+  @boundscheck checkbounds(1:length(A.V), j)
 
   # Find the column index `j` in the i-th row
   # Luckily, we had functional programming! ;) this can be done using:
@@ -79,8 +78,8 @@ end
 Sets the value of the element at position (i, j). Enables `A[i, j] = value` syntax.
 """
 function setindex!(A::RedkaMatrika{T}, value::T, i::Int, j::Int) where {T<:Number}
-  @boundscheck checkbounds(1:A.n, i)
-  @boundscheck checkbounds(1:A.n, j)
+  @boundscheck checkbounds(1:length(A.V), i)
+  @boundscheck checkbounds(1:length(A.V), j)
 
   # Find the column index `j` in the i-th row
   idx_in_row = findfirst(isequal(j), A.I[i])
@@ -115,15 +114,16 @@ end
 Computes the product of a sparse matrix `A` and a vector `v`.
 """
 function *(A::RedkaMatrika{T}, v::Vector{T}) where {T<:Number}
-  if A.n != length(v)
+  n = length(A.V)
+  if n != length(v)
     throw(DimensionMismatch("Matrix dimensions $(size(A)) do not match vector length $(length(v))"))
   end
 
   # Initialize the result vector with zeros
-  result = zeros(T, A.n)
+  result = zeros(T, n)
 
   # Iterate only over the non-zero elements
-  for i in 1:A.n # Iterate over the matrix rows
+  for i in 1:n # Iterate over the matrix rows
     # Sum for the i-th row of the result
     row_sum = zero(T)
     for k in 1:length(A.I[i])
@@ -155,7 +155,7 @@ Solves the linear system Ax = b using the Successive Over-Relaxation (SOR) itera
 - `Int`: The number of iterations performed.
 """
 function sor(A::RedkaMatrika{T}, b::Vector{T}, x0::Vector{T}, omega::Real; tol::Real=1e-10, max_iter::Int=1000) where {T<:Number}
-  n = A.n
+  n = length(A.V)
   if n != length(b) || n != length(x0)
     throw(DimensionMismatch("Dimenzije matrike A ter vektorjev b in x0 se ne ujemajo."))
   end
