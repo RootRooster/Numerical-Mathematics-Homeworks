@@ -5,3 +5,6 @@ This repository contains the three homework assignments for the Numerical Mathem
 # Documentation
 
 Click [here](https://rootrooster.github.io/Numerical-Mathematics-Homeworks/dev/) to visit the official documentation page.
+
+# Instantiate
+To start local development go into the julia REPL and press ]. Then `activate .` and `dev Homework1 Homework2 Homework3` and finally `instantiate .`.
