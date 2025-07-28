@@ -1,5 +1,5 @@
 module Homework2
-export de_casteljau, calculate_bezier_loop_area, calculate_bezier_loop_area_auto_detect, find_bezier_self_intersection
+export de_casteljau, calculate_bezier_loop_area, calculate_bezier_loop_area_auto_detect, find_bezier_self_intersection, bezier_loop_integrand, integrate_gl_20, evaluate_bezier_2D
 
 # Pre-computed 20-point Gauss-Legendre quadrature nodes and weights for the interval [-1, 1].
 # Source: https://dlmf.nist.gov/3.5
