@@ -19,7 +19,7 @@ function main()
     println(" ", point)
   end
 
-  area = calculate_bezier_loop_area(CONTROL_POLYGON)
+  area = calculate_bezier_loop_area_auto_detect(CONTROL_POLYGON)
   println("\n--------------------")
   println("Calculated area: ", area)
   println("--------------------")

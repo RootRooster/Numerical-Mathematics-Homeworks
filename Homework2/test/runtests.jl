@@ -64,17 +64,52 @@ using Homework2
     @test calculate_bezier_loop_area(points_parabola_rev) ≈ 1 / 3 atol = 1e-11
 
     points_in_example = [
-      (0.0, 0.0),
-      (1.0, 1.0),
-      (2.0, 3.0),
-      (1.0, 4.0),
-      (0.0, 4.0),
-      (-1.0, 3.0),
-      (0.0, 1.0),
-      (1.0, 0.0)
+      (0.0, 0.0), (1.0, 1.0), (2.0, 3.0), (1.0, 4.0),
+      (0.0, 4.0), (-1.0, 3.0), (0.0, 1.0), (1.0, 0.0)
     ]
 
     result = calculate_bezier_loop_area(points_in_example)
     @test result ≈ 1.966200466200 atol = 1e-11
+  end
+
+  @testset "Bézier Loop Calculation" begin
+
+    # --- Test Data ---
+    points_with_loop = [
+      (0.0, 0.0), (1.0, 1.0), (2.0, 3.0), (1.0, 4.0),
+      (0.0, 4.0), (-1.0, 3.0), (0.0, 1.0), (1.0, 0.0)
+    ]
+
+    # A simple quadratic curve that does not self-intersect
+    points_no_loop = [(0.0, 0.0), (1.0, 1.0), (2.0, 0.0)]
+
+    expected_t_start = 0.07506435058866631
+    expected_t_end = 0.9249356494113337
+    expected_area = 2.253709530172552
+
+    # Tolerance for floating point comparisons
+    TOL = 1e-9
+
+    # --- Tests ---
+
+    @testset "find_bezier_self_intersection" begin
+      # Test case 1: Successful intersection finding
+      t_start, t_end = find_bezier_self_intersection(points_with_loop, logging=false)
+      @test isapprox(t_start, expected_t_start, atol=TOL)
+      @test isapprox(t_end, expected_t_end, atol=TOL)
+
+      # Test case 2: Throws error when no loop is found
+      @test_throws ArgumentError find_bezier_self_intersection(points_no_loop, logging=false)
+    end
+
+    @testset "calculate_bezier_loop_area_auto_detect" begin
+      # Test case 1: Successful area calculation
+      area = calculate_bezier_loop_area_auto_detect(points_with_loop, logging=false)
+      @test isapprox(area, expected_area, atol=TOL)
+
+      # Test case 2: Throws error when no loop is found (propagated from the finder function)
+      @test_throws ArgumentError calculate_bezier_loop_area_auto_detect(points_no_loop, logging=false)
+    end
+
   end
 end
