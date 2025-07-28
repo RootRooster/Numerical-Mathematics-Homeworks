@@ -1,5 +1,9 @@
+# This code includes portions from the following source:
+# Source: https://gitlab.com/nummat/nummat-knjiga
+# Author: Martin Vuk
+# URL: https://gitlab.com/nummat/nummat-knjiga/-/blob/master/Vaja06/src/Vaja06.jl?ref_type=heads
 # License: © 2025 Martin Vuk. All rights reserved. Explicit permission by the author to use the code in this solution for the homework.
-# I have obtained verbal consent from the author to utilize this code for the purpose of this project.
+# Original code may have been modified for this project.
 
 using Graphs
 using Plots
