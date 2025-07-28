@@ -7,6 +7,9 @@ de_casteljau
 calculate_bezier_loop_area
 calculate_bezier_loop_area_auto_detect
 find_bezier_self_intersection
+bezier_loop_integrand
+integrate_gl_20
+evaluate_bezier_2D
 ```
 
 ---
