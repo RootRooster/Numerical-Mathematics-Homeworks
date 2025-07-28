@@ -13,6 +13,8 @@ calculate_bezier_loop_area
 
 [Algoritem de Casteljau](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm) je stabilen in numerično robusten postopek za evalvacijo (in razbitje) Bézierjeve krivulje stopnje $n$.
 
+Bézierova krivulja je podana parametriično s formulo:
+
 $$\mathbf{B}(t)=\sum_{i=0}^{n}{n \choose i}(1-t)^{n-i}t^{i}\mathbf{P}_{i},\qquad t\in[0,1],$$
 
 kjer so $\mathbf{P}_{i}$ kontrolne točke.
