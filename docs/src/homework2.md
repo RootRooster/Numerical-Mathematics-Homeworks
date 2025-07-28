@@ -40,9 +40,9 @@ Zahvaljujoč zgolj seštevanju in množenju z realnimi števili je algoritem bre
 
 ## 2   Ploščina zaprtih Bézierjevih zank
 
-### 2.1 Green's theorem
+### 2.1 Greenova formula
 Naj bo $\mathbf{r}(t)=(x(t),y(t))$ gladka, zaprta krivulja z $t\in[0,1]$.  
-[Green's theorem](https://en.wikipedia.org/wiki/Green%27s_theorem) poda ploščino
+[Greenova formula](https://en.wikipedia.org/wiki/Green%27s_theorem) poda ploščino
 
 $$A=\frac12\oint_{\mathbf{r}}\bigl(x\,dy-y\,dx\bigr)=\frac12\int_{0}^{1}\!\bigl[x(t)\,y'(t)-x'(t)\,y(t)\bigr]\,dt.$$
 
@@ -51,14 +51,13 @@ Za Bézierjevo krivuljo dobimo polinom stopnje $n-1$. Integral torej lahko izra�
 ### 2.2   Koraki funkcije `calculate_bezier_loop_area`
 
 1. Ločimo koordinate kontrolnih točk v vektorja `px`, `py`.
-2. Izračunamo kontrolne točke odvodov $x'(t)$ in $y'(t)$ s formulo  
-   $$\mathbf{P}'_{i}=n\bigl(\mathbf{P}_{i+1}-\mathbf{P}_{i}\bigr).$$
+2. Izračunamo kontrolne točke odvodov $x'(t)$ in $y'(t)$ s formulo $$\mathbf{P}'_{i}=n\bigl(\mathbf{P}_{i+1}-\mathbf{P}_{i}\bigr)$$ ([vir](https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html)).
 3. Za vsako vozlišče $\xi_{k}\in[-1,1]$ 20-točkovne kvadrature izvedemo preslikavo  
    $t=\tfrac12(\xi_{k}+1)$ in ovrednotimo
    $$f(t)=x(t)\,y'(t)-x'(t)\,y(t)$$
    z `de_casteljau`.
 4. Seštejemo $w_{k}f(t_{k})$ (teža $w_{k}$) s faktorjem $\tfrac14$:  
-   prvi $\tfrac12$ iz Green's theorema, drugi $\tfrac12$ zaradi preslikave intervala.
+   prvi $\tfrac12$ iz Greenove formule, drugi $\tfrac12$ zaradi preslikave intervala.
 
 ---
 
