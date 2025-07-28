@@ -32,7 +32,7 @@ V funkciji `de_casteljau(points, t)` se:
 
 1. Kopira vhodni vektor koeficientov (1D projekcija),
 2. izvede zgornja interpolacija v dveh gnezdenih zankah,
-3. Vrne vrednost v $t$.
+3. Vrne položaj Bézierove krivulje $B(t)$ v $t$.
 
 Zahvaljujoč zgolj seštevanju in množenju z realnimi števili je algoritem brez problemov z nestabilnostjo, ki pestijo direktno evalvacijo Bernstein-ove vsote za večje $n$.
 
