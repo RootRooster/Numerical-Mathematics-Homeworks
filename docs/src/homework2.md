@@ -31,7 +31,7 @@ Po $n$ korakih ostane ena sama točka $\mathbf{P}^{(n)}_{0}(t)=\mathbf{B}(t)$.
 V funkciji `de_casteljau(points, t)` se:
 
 1. Kopira vhodni vektor koeficientov (1D projekcija),
-2. V dveh vgrajenih zankah izvede zgornja interpolacija,
+2. izvede zgornja interpolacija v dveh gnezdenih zankah,
 3. Vrne vrednost v $t$.
 
 Zahvaljujoč zgolj seštevanju in množenju z realnimi števili je algoritem brez problemov z nestabilnostjo, ki pestijo direktno evalvacijo Bernstein-ove vsote za večje $n$.
