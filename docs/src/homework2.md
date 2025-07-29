@@ -10,6 +10,7 @@ find_bezier_self_intersection
 bezier_loop_integrand
 integrate_gl_20
 evaluate_bezier_2D
+derivative_control_points
 ```
 
 ---
@@ -78,22 +79,23 @@ Za Bézierjevo krivuljo dobimo polinom stopnje $n-1$. Integral torej lahko izra�
 
 ### 2.3   Avtomatska detekcija zanke in izračun ploščine
 
-Funkcija `calculate_bezier_loop_area_auto_detect` avtomatsko najde točko samopresečišča Bézierove krivulje in izračuna ploščino nastale zanke. Postopek poteka v dveh fazah:
+Funkcija `calculate_bezier_loop_area_auto_detect` samodejno najde točko samopresečišča Bézierjeve krivulje in izračuna ploščino nastale zanke. Postopek poteka v dveh fazah:
 
-#### 2.3.1   Groba iskanje samopresečišča
-1. **Vzorčenje krivulje**: Krivuljo vzorčimo z $1000$ enakomerno razporejenimi točkami na intervalu $[0, 1]$.
-2. **Iskanje najbližjih točk**: Poiščemo par točk $(t_1, t_2)$ z minimalno razdaljo, kjer je $|t_1 - t_2| > 0.01$ (zagotavlja, da ne primerjamo sosednjih točk).
-3. **Preverjanje pravilnosti**: Če je minimalna razdalja večja od $10^{-3}$, krivulja nima samopresečišča.
+#### 2.3.1   Grobo iskanje samopresečišča
+1. **Vzorčenje krivulje**: Krivuljo vzorčimo z 1000 enakomerno razporejenimi točkami na intervalu $[0, 1]$.
+2. **Iskanje najbližjih točk**: Poiščemo par točk $(t_1, t_2)$ z minimalno razdaljo, kjer je $|t_1 - t_2| > 0.1$ (da ne primerjamo sosednjih točk).
+3. **Preverjanje**: Če ni najdenega para, funkcija vrže izjemo (krivulja nima samopresečišča).
 
-#### 2.3.2   Iterativno izboljšanje
-1. **Omejitev iskalnega območja**: Okoli najdenih $t_1$ in $t_2$ vzpostavimo majhno iskalno okno.
-2. **Gnezdeno vzorčenje**: V oknu vzorčimo z $10$ točkami in ponovno poiščemo najbližji par.
-3. **Zmanjšanje okna**: Iskalno okno postopoma zmanjšujemo za faktor $5$ v vsaki iteraciji.
-4. **Konvergenca**: Postopek se ustavi, ko je razdalja med točkama manjša od $10^{-12}$.
+#### 2.3.2   Natančno iskanje z Newtonovo metodo
+1. **Začetni približek**: Uporabimo $(t_1, t_2)$ iz grobe faze kot začetni približek.
+2. **Newtonova metoda**: Rešujemo sistem dveh nelinearnih enačb $B(t_1) = B(t_2)$, kjer $B$ je Bézierjeva krivulja. V vsaki iteraciji izračunamo razliko in Jacobijevo matriko ter posodobimo $(t_1, t_2)$.
+3. **Konvergenca**: Postopek se ustavi, ko je norma koraka manjša od tolerance (privzeto $10^{-12}$) ali ko presežemo maksimalno število iteracij (privzeto 20).
+4. **Izjeme**: Če Jacobijeva matrika postane singularna ali metoda ne konvergira, funkcija vrže izjemo.
+
 
 #### 2.3.3   Izračun ploščine zanke
 Ko imamo točki samopresečišča $(t_{start}, t_{end})$, izračunamo ploščino zanke z integracijo Greenove formule na intervalu $[t_{start}, t_{end}]$:
-$$A = \frac{1}{2}\int_{t_{start}}^{t_{end}} \bigl[x(t)\,y'(t) - x'(t)\,y(t)\bigr]\,dt$$
+$$A = \frac{1}{2}\int_{t_{start}}^{t_{end}} \bigl[x(t)\,y'(t) - x'(t)\,y(t)\bigr] \,dt$$
 
 ## 3   Konkreten primer uporabe
 
@@ -128,11 +130,11 @@ Ko pokličemo funkcijo `calculate_bezier_loop_area_auto_detect`, algoritem:
 
 ```julia
 area = calculate_bezier_loop_area_auto_detect(CONTROL_POLYGON)
-
 # Izpis algoritma:
-# Refined search complete. Final squared distance: 9.860761315262648e-32
-# Detected point of intersection: (0.49999999999999983, 0.6162957792872205)
-# Value of t_1: 0.07506435058866631. Value of t_2: 0.9249356494113337
+# Coarse search found initial guess: t1 ≈ 0.07507507507507508, t2 ≈ 0.924924924924925
+# Newton's method converged in 3 iterations.
+# Detected intersection point: (0.4999999999999998, 0.61629577928722)
+# Final parameters: t1 = 0.0750643505886663, t2 = 0.9249356494113337
 #
 # --------------------
 # Calculated area: 2.253709530172552

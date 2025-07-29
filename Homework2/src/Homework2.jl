@@ -1,5 +1,6 @@
 module Homework2
-export de_casteljau, calculate_bezier_loop_area, calculate_bezier_loop_area_auto_detect, find_bezier_self_intersection, bezier_loop_integrand, integrate_gl_20, evaluate_bezier_2D
+using LinearAlgebra
+export de_casteljau, calculate_bezier_loop_area, calculate_bezier_loop_area_auto_detect, find_bezier_self_intersection, bezier_loop_integrand, integrate_gl_20, evaluate_bezier_2D, calculate_bezier_loop_area, derivative_control_points
 
 # Pre-computed 20-point Gauss-Legendre quadrature nodes and weights for the interval [-1, 1].
 # Source: https://dlmf.nist.gov/3.5
@@ -82,60 +83,61 @@ end
 """
     integrate_gl_20(f::Function, a::Float64, b::Float64) -> Float64
 
-Izračuna določeni integral funkcije `f` na intervalu `[a, b]` z uporabo
-Gauss-Legendre kvadrature z 20 vozlišči.
+Calculates the definite integral of a function `f` over the interval `[a, b]`
+using 20-point Gauss-Legendre quadrature.
 
-# Argumenti
-- `f`: Funkcija, ki jo je treba integrirati. Pričakuje en argument `t::Float64`.
-- `a`: Spodnja meja integracije.
-- `b`: Zgornja meja integracije.
+# Arguments
+- `f`: The function to integrate. It should accept a single `Float64` argument.
+- `a`: The lower bound of integration.
+- `b`: The upper bound of integration.
 
-# Rezultat
-- Vrednost določenega integrala.
+# Returns
+- The approximate value of the definite integral.
 """
 function integrate_gl_20(f::Function, a::Float64, b::Float64)::Float64
   total_integral = 0.0
-  scale_factor = (b - a) / 2.0 # Skalacijski faktor za preslikavo intervala [-1, 1] na [a, b]
+  # Scaling factor to map the standard interval [-1, 1] to [a, b]
+  scale_factor = (b - a) / 2.0
 
   for i in eachindex(GAUSS_LEGENDRE_NODES_20)
     node = GAUSS_LEGENDRE_NODES_20[i]
     weight = GAUSS_LEGENDRE_WEIGHTS_20[i]
 
-    # Preslikava vozlišča (ξ) iz standardnega intervala [-1, 1] na interval [a, b]
-    # t = ((b - a) / 2) * ξ + ((a + b) / 2)
+    # Map the node (ξ) from the standard interval [-1, 1] to the target interval [a, b]
+    # The transformation is: t = ((b - a) / 2) * ξ + ((a + b) / 2)
     transformed_t = scale_factor * node + (a + b) / 2.0
 
-    # Dodaj prispevek k integralu: utež * f(preslikano_vozlišče)
+    # Add the contribution to the integral: weight * f(transformed_node)
     total_integral += weight * f(transformed_t)
   end
 
-  # Končni integral je skaliran s faktorjem (b - a) / 2
+  # The final integral must be scaled by the factor (b - a) / 2
   return scale_factor * total_integral
 end
-
 
 """
     bezier_loop_integrand(t::Float64, px::Vector{Float64}, py::Vector{Float64}, d_px::Vector{Float64}, d_py::Vector{Float64}) -> Float64
 
-Izračuna vrednost integranda za izračun površine zanke Bézierove krivulje pri parametru `t`.
-Integrand je \\(x(t)y'(t) - x'(t)y(t)\\).
+Calculates the value of the integrand used to compute the area of a Bézier curve's loop at a given parameter `t`.
 
-# Argumenti
-- `t`: Parameter na krivulji (običajno med 0.0 in 1.0).
-- `px`: X-koordinate kontrolnih točk originalne Bézierove krivulje.
-- `py`: Y-koordinate kontrolnih točk originalne Bézierove krivulje.
-- `d_px`: X-koordinate kontrolnih točk derivata Bézierove krivulje (\\(x'(t)\\)).
-- `d_py`: Y-koordinate kontrolnih točk derivata Bézierove krivulje (\\(y'(t)\\)).
+The area of a closed loop can be computed using Green's Theorem, where the integrand is given by \\(x(t)y'(t) - x'(t)y(t)\\).
 
-# Rezultat
-- Vrednost integranda \\(x(t)y'(t) - x'(t)y(t)\\) pri danem `t`.
+# Arguments
+- `t`: The parameter on the curve (typically between 0.0 and 1.0).
+- `px`: The x-coordinates of the control points for the original Bézier curve.
+- `py`: The y-coordinates of the control points for the original Bézier curve.
+- `d_px`: The x-coordinates of the control points for the derivative Bézier curve (representing \\(x'(t)\\)).
+- `d_py`: The y-coordinates of the control points for the derivative Bézier curve (representing \\(y'(t)\\)).
+
+# Returns
+- The value of the integrand \\(x(t)y'(t) - x'(t)y(t)\\) at the given `t`.
 """
 function bezier_loop_integrand(t::Float64, px::Vector{Float64}, py::Vector{Float64}, d_px::Vector{Float64}, d_py::Vector{Float64})::Float64
-  # Izračunaj koordinate točke na krivulji pri t
+  # Calculate the value at t
   x_t = de_casteljau(px, t)
   y_t = de_casteljau(py, t)
 
-  # Izračunaj koordinate odvoda krivulje pri t
+  # Calculate the derivative value at t
   dx_t = de_casteljau(d_px, t)
   dy_t = de_casteljau(d_py, t)
 
@@ -161,10 +163,8 @@ function calculate_bezier_loop_area(control_points::Vector{NTuple{2,Float64}}; t
     return 0.0
   end
 
-  # Preverimo veljavnost vhodnih parametrov
   if !(0.0 <= t_start <= 1.0) || !(0.0 <= t_end <= 1.0) || t_start > t_end
     @warn "Neveljavni parametri t_start ali t_end. Integracija bo morda netočna."
-    # Lahko bi vrnili 0.0 ali sprožili napako, odvisno od želenega obnašanja
   end
 
   degree = num_points - 1
@@ -189,114 +189,120 @@ function calculate_bezier_loop_area(control_points::Vector{NTuple{2,Float64}}; t
 end
 
 """
-    find_bezier_self_intersection(control_points::Vector{NTuple{2,Float64}}; num_samples_coarse::Int=1000, num_refinement_iterations::Int=100, refinement_samples::Int=10, distance_threshold_sq::Float64=1e-12, logging::Bool=true)
+    derivative_control_points(points::Vector{NTuple{2, Float64}})
 
-Finds the self-intersection parameters (t_start, t_end) of a Bézier curve using
-a two-phase approach: a coarse search followed by iterative refinement.
+Calculates the control points for the derivative of a Bézier curve.
+
+The derivative of a degree (n) Bézier curve is a Bézier curve of degree (n-1). This function computes the control points for that derivative curve.
 
 # Arguments
-- `control_points`: A vector of (x, y) tuples representing the control points.
-- `num_samples_coarse`: Number of samples for the initial rough search.
-- `num_refinement_iterations`: Number of iterations to refine the intersection point.
-- `refinement_samples`: Number of samples to use within the shrinking window at each iteration.
-- `distance_threshold_sq`: The squared distance threshold to accept a point as an intersection.
-- `logging`: A boolean to enable or disable logging.
+- `points`: A vector of 2D tuples representing the control points of the original curve.
 
 # Returns
-A tuple `(t_start, t_end)` representing the parameter values at the point of self-intersection.
-Throws an `ArgumentError` if no loop is found or if the refinement fails to converge.
+- A new vector of control points for the derivative curve.
+"""
+function derivative_control_points(points::Vector{NTuple{2,Float64}})
+  n = length(points) - 1
+  return [(n * (points[i+1][1] - points[i][1]), n * (points[i+1][2] - points[i][2])) for i in 1:n]
+end
+
+"""
+    find_bezier_self_intersection(control_points::Vector{NTuple{2,Float64}}; kwargs...) -> Tuple{Float64, Float64}
+
+Finds the self-intersection parameters (t_start, t_end) of a Bézier curve.
+This uses a two-phase approach: a coarse search to find an initial guess,
+then refines it with Newton's method for solving systems of nonlinear equations.
+
+# Arguments
+- `control_points`: A vector of `(x, y)` tuples representing the control points.
+- `num_samples_coarse::Int=1000`: Number of samples for the initial coarse search.
+- `max_newton_iter::Int=20`: Maximum number of iterations for Newton's method.
+- `tolerance::Float64=1e-12`: The convergence tolerance for Newton's method (based on the norm of the step).
+- `logging::Bool=true`: A boolean to enable or disable logging output.
+
+# Returns
+- A sorted tuple `(t_start, t_end)` representing the parameter values at the point of self-intersection.
+
+# Throws
+- `ArgumentError`: If no plausible self-intersection is found in the coarse search.
+- `ArgumentError`: If Newton's method fails to converge or if the Jacobian matrix becomes singular.
 """
 function find_bezier_self_intersection(
   control_points::Vector{NTuple{2,Float64}};
   num_samples_coarse::Int=1000,
-  num_refinement_iterations::Int=100,
-  refinement_samples::Int=10,
-  distance_threshold_sq::Float64=1e-12,
+  max_newton_iter::Int=20,
+  tolerance::Float64=1e-12,
   logging::Bool=true
 )
-  # ========== PHASE 1: COARSE SEARCH ==========
-  t_values = range(0.0, stop=1.0, length=num_samples_coarse)
-  points = [evaluate_bezier_2D(control_points, t) for t in t_values]
-  min_index_separation = max(10, num_samples_coarse ÷ 20)
+  # STEP 1: Coarse search for a good initial approximation
+  samples = [evaluate_bezier_2D(control_points, t) for t in range(0.0, 1.0, length=num_samples_coarse)]
+  t_values = collect(range(0.0, 1.0, length=num_samples_coarse))
 
-  min_dist_sq_coarse = Inf
-  t_start_coarse = 0.0
-  t_end_coarse = 0.0
+  min_dist_sq = Inf
+  t1_coarse, t2_coarse = -1.0, -1.0
 
   for i in 1:num_samples_coarse
-    for j in (i+min_index_separation):num_samples_coarse
-      p1 = points[i]
-      p2 = points[j]
-      dist_sq = (p1[1] - p2[1])^2 + (p1[2] - p2[2])^2
-      if dist_sq < min_dist_sq_coarse
-        min_dist_sq_coarse = dist_sq
-        t_start_coarse = t_values[i]
-        t_end_coarse = t_values[j]
-      end
-    end
-  end
-
-  if min_dist_sq_coarse > 1e-3 # Lenient threshold for coarse search
-    throw(ArgumentError("No plausible loop found in coarse search. Min dist sq: $min_dist_sq_coarse"))
-  end
-
-  # ========== PHASE 2: ITERATIVE REFINEMENT ==========
-  current_t_start = t_start_coarse
-  current_t_end = t_end_coarse
-  search_window = 2.0 / num_samples_coarse
-
-  for iter in 1:num_refinement_iterations
-    min_dist_sq_refinement = Inf
-    best_t_start_in_iter = current_t_start
-    best_t_end_in_iter = current_t_end
-
-    t_start_range = range(clamp(current_t_start - search_window / 2, 0.0, 1.0), stop=clamp(current_t_start + search_window / 2, 0.0, 1.0), length=refinement_samples)
-    t_end_range = range(clamp(current_t_end - search_window / 2, 0.0, 1.0), stop=clamp(current_t_end + search_window / 2, 0.0, 1.0), length=refinement_samples)
-
-    for ts in t_start_range, te in t_end_range
-      if abs(ts - te) < 1e-9
+    for j in (i+1):num_samples_coarse
+      # Avoid comparing adjacent points on the curve
+      if abs(t_values[i] - t_values[j]) < 0.1
         continue
       end
 
-      p1 = evaluate_bezier_2D(control_points, ts)
-      p2 = evaluate_bezier_2D(control_points, te)
-      dist_sq = (p1[1] - p2[1])^2 + (p1[2] - p2[2])^2
-
-      if dist_sq < min_dist_sq_refinement
-        min_dist_sq_refinement = dist_sq
-        best_t_start_in_iter = ts
-        best_t_end_in_iter = te
+      dist_sq = (samples[i][1] - samples[j][1])^2 + (samples[i][2] - samples[j][2])^2
+      if dist_sq < min_dist_sq
+        min_dist_sq = dist_sq
+        t1_coarse, t2_coarse = t_values[i], t_values[j]
       end
     end
-
-    current_t_start = best_t_start_in_iter
-    current_t_end = best_t_end_in_iter
-    search_window /= (refinement_samples / 2)
   end
 
-  # ========== PHASE 3: FINAL CHECK ==========
-  if current_t_start > current_t_end
-    current_t_start, current_t_end = current_t_end, current_t_start
-  end
-
-  final_point_start = evaluate_bezier_2D(control_points, current_t_start)
-  final_point_end = evaluate_bezier_2D(control_points, current_t_end)
-  final_dist_sq = (final_point_start[1] - final_point_end[1])^2 + (final_point_start[2] - final_point_end[2])^2
-
-  if final_dist_sq > distance_threshold_sq
-    throw(ArgumentError("Refinement failed to converge. Min dist sq: $final_dist_sq > threshold $distance_threshold_sq"))
+  if t1_coarse == -1.0
+    throw(ArgumentError("No self-intersection found in coarse search."))
   end
 
   if logging
-    println("Refined search complete. Final squared distance: $final_dist_sq")
-    point_approx = ((final_point_start[1] + final_point_end[1]) / 2, (final_point_start[2] + final_point_end[2]) / 2)
-    println("Detected point of intersection: $point_approx")
-    println("Value of t_1:$current_t_start. Value of t_2:$current_t_end")
+    println("Coarse search found initial guess: t1 ≈ $t1_coarse, t2 ≈ $t2_coarse")
   end
 
-  return (current_t_start, current_t_end)
-end
+  # STEP 2: Refined search using Newton's method
+  t = [t1_coarse, t2_coarse]
+  d_control_points = derivative_control_points(control_points)
 
+  for iter in 1:max_newton_iter
+    # Define the function F(t) = B(t₁) - B(t₂) which we want to find the root of
+    val_t1 = evaluate_bezier_2D(control_points, t[1])
+    val_t2 = evaluate_bezier_2D(control_points, t[2])
+    F = [val_t1[1] - val_t2[1], val_t1[2] - val_t2[2]]
+
+    # Jacobian matrix J_F(t) = [B'(t₁) | -B'(t₂)]
+    d_val_t1 = evaluate_bezier_2D(d_control_points, t[1])
+    d_val_t2 = evaluate_bezier_2D(d_control_points, t[2])
+    J = [d_val_t1[1] -d_val_t2[1];
+      d_val_t1[2] -d_val_t2[2]]
+
+    # Check for matrix singularity
+    if abs(det(J)) < 1e-12
+      throw(ArgumentError("Jacobian matrix is singular. Newton's method failed."))
+    end
+
+    # Solve the system J * delta_t = -F for the Newton step
+    delta_t = J \ (-F)
+    t += delta_t
+
+    # Stopping condition
+    if norm(delta_t) < tolerance
+      if logging
+        intersection_point = evaluate_bezier_2D(control_points, t[1])
+        println("Newton's method converged in $iter iterations.")
+        println("Detected intersection point: $intersection_point")
+        println("Final parameters: t1 = $(t[1]), t2 = $(t[2])")
+      end
+      return sort(t) # Return the sorted pair of t-values
+    end
+  end
+
+  throw(ErrorException("Newton's method did not converge within $max_newton_iter iterations."))
+end
 
 """
     calculate_bezier_loop_area_auto_detect(control_points::Vector{NTuple{2,Float64}}; kwargs...)

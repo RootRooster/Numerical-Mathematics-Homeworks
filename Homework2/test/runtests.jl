@@ -72,44 +72,55 @@ using Homework2
     @test result ≈ 1.966200466200 atol = 1e-11
   end
 
+
   @testset "Bézier Loop Calculation" begin
 
     # --- Test Data ---
+    # Control points for a Bézier curve that forms a loop.
     points_with_loop = [
       (0.0, 0.0), (1.0, 1.0), (2.0, 3.0), (1.0, 4.0),
       (0.0, 4.0), (-1.0, 3.0), (0.0, 1.0), (1.0, 0.0)
     ]
 
-    # A simple quadratic curve that does not self-intersect
-    points_no_loop = [(0.0, 0.0), (1.0, 1.0), (2.0, 0.0)]
+    # A simple quadratic curve that does not self-intersect.
+    points_no_loop = [(0.0, 0.0), (1.0, 2.0), (2.0, 0.0)]
 
+    # Expected values are highly precise, reflecting the accuracy of Newton's method.
     expected_t_start = 0.07506435058866631
     expected_t_end = 0.9249356494113337
     expected_area = 2.253709530172552
 
-    # Tolerance for floating point comparisons
+    # Tolerance for floating point comparisons.
     TOL = 1e-9
 
     # --- Tests ---
 
-    @testset "find_bezier_self_intersection" begin
-      # Test case 1: Successful intersection finding
-      t_start, t_end = find_bezier_self_intersection(points_with_loop, logging=false)
+    @testset "find_bezier_self_intersection with Newton's Method" begin
+      # Test case 1: Successful intersection finding.
+      # The new implementation uses Newton's method for high-precision refinement.
+      t_start, t_end = find_bezier_self_intersection(
+        points_with_loop,
+        logging=false,
+        tolerance=1e-12 # Explicitly test with an argument for the new method
+      )
       @test isapprox(t_start, expected_t_start, atol=TOL)
       @test isapprox(t_end, expected_t_end, atol=TOL)
 
-      # Test case 2: Throws error when no loop is found
+      # Test case 2: Correctly throws an error when no loop is found.
+      # The coarse search fails to find a candidate and throws an `ArgumentError`.
       @test_throws ArgumentError find_bezier_self_intersection(points_no_loop, logging=false)
     end
 
     @testset "calculate_bezier_loop_area_auto_detect" begin
-      # Test case 1: Successful area calculation
+      # Test case 1: Successful area calculation with auto-detected intersection.
       area = calculate_bezier_loop_area_auto_detect(points_with_loop, logging=false)
       @test isapprox(area, expected_area, atol=TOL)
 
-      # Test case 2: Throws error when no loop is found (propagated from the finder function)
+      # Test case 2: Correctly propagates the error when no loop is found.
       @test_throws ArgumentError calculate_bezier_loop_area_auto_detect(points_no_loop, logging=false)
     end
 
   end
+
+
 end
