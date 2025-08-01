@@ -8,7 +8,8 @@ makedocs(
   sitename="Homeworks Documentation",
   pages=[
     "Overview" => "index.md",
-    "Homework 1" => "homework1.md"
+    "Homework 1" => "homework1.md",
+    "Homework 2" => "homework2.md"
   ],
   modules=[Homeworks, Homework1, Homework2, Homework3],
   format=Documenter.HTML(
