@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 3D Orbit Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+            color: #f3f4f6; /* text-gray-200 */
+        }
+        .control-panel {
+            background-color: #1f2937; /* bg-gray-800 */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .slider-container {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 1rem;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4b5563; /* bg-gray-600 */
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6; /* bg-blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1f2937;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6; /* bg-blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #1f2937;
+        }
+        .param-value {
+            background-color: #374151; /* bg-gray-700 */
+            color: #d1d5db; /* text-gray-300 */
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            text-align: center;
+            border: 1px solid #4b5563;
+            width: 5rem;
+        }
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, opacity 0.2s;
+            width: 100%;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #plot-container {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Controls Column -->
+        <div class="lg:col-span-1">
+            <div class="control-panel">
+                <h1 class="text-2xl font-bold mb-2 text-white">Orbit Simulator</h1>
+                <p class="text-gray-400 mb-6">Adjust the initial conditions to explore different trajectories in the Earth-Moon system.</p>
+
+                <!-- Initial Position -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-300">Initial Position (x, y, z)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="x0" class="block text-sm font-medium text-gray-400">x₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="x0" min="-1.5" max="1.5" step="0.01" value="0.994">
+                                <input type="number" id="x0-value" class="param-value" min="-1.5" max="1.5" step="0.01" value="0.994">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="y0" class="block text-sm font-medium text-gray-400">y₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="y0" min="-1.5" max="1.5" step="0.01" value="0">
+                                <input type="number" id="y0-value" class="param-value" min="-1.5" max="1.5" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="z0" class="block text-sm font-medium text-gray-400">z₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="z0" min="-1.5" max="1.5" step="0.01" value="0">
+                                <input type="number" id="z0-value" class="param-value" min="-1.5" max="1.5" step="0.01" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initial Velocity -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-300">Initial Velocity (ẋ, ẏ, ż)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="vx0" class="block text-sm font-medium text-gray-400">ẋ₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="vx0" min="-2" max="2" step="0.01" value="0">
+                                <input type="number" id="vx0-value" class="param-value" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="vy0" class="block text-sm font-medium text-gray-400">ẏ₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="vy0" min="-2.5" max="2.5" step="0.001" value="-2.001">
+                                <input type="number" id="vy0-value" class="param-value" step="0.001" value="-2.001">
+                            </div>
+                        </div>
+                         <div>
+                            <label for="vz0" class="block text-sm font-medium text-gray-400">ż₀</label>
+                            <div class="slider-container">
+                                <input type="range" id="vz0" min="-2" max="2" step="0.01" value="0">
+                                <input type="number" id="vz0-value" class="param-value" step="0.01" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Parameters -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-300">Simulation Parameters</h3>
+                     <div class="space-y-3">
+                        <div>
+                            <label for="t_end" class="block text-sm font-medium text-gray-400">End Time (t)</label>
+                            <div class="slider-container">
+                                <input type="range" id="t_end" min="1" max="50" step="1" value="15">
+                                <input type="number" id="t_end-value" class="param-value" min="1" max="50" step="1" value="15">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="h_step" class="block text-sm font-medium text-gray-400">Step Size (h)</label>
+                            <div class="slider-container">
+                                <input type="range" id="h_step" min="0.0001" max="0.01" step="0.0001" value="0.001">
+                                <input type="number" id="h_step-value" class="param-value" min="0.0001" max="0.01" step="0.0001" value="0.001">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="run-simulation" class="btn-primary">Run Simulation</button>
+            </div>
+        </div>
+
+        <!-- Plot Column -->
+        <div class="lg:col-span-2 min-h-[600px] lg:min-h-0">
+            <div id="plot-container" class="w-full h-full bg-[#1f2937]">
+                <div id="plot" class="w-full h-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants (from your Julia code) ---
+        const M_EARTH = 5.9722e24;
+        const M_MOON = 7.346e22;
+        const MU_UNIT = M_MOON / (M_EARTH + M_MOON);
+        const MU_BAR_UNIT = 1 - MU_UNIT;
+
+        // --- DOM Elements ---
+        const runButton = document.getElementById('run-simulation');
+        const plotDiv = document.getElementById('plot');
+        
+        // --- Core Simulation Logic (JavaScript implementation of your Julia code) ---
+        function calculate_distances(x, y, z) {
+            const R = Math.sqrt((x + MU_UNIT)**2 + y**2 + z**2);
+            const r = Math.sqrt((x - MU_BAR_UNIT)**2 + y**2 + z**2);
+            return [R, r];
+        }
+
+        function three_body_eom(u) {
+            const [x, y, z, x_dot, y_dot, z_dot] = u;
+            
+            const [R, r] = calculate_distances(x, y, z);
+
+            if (R === 0 || r === 0) return [0,0,0,0,0,0];
+
+            const mu_bar_over_R3 = MU_BAR_UNIT / (R**3);
+            const mu_over_r3 = MU_UNIT / (r**3);
+
+            const x_dot_dot = x + 2 * y_dot - mu_bar_over_R3 * (x + MU_UNIT) - mu_over_r3 * (x - MU_BAR_UNIT);
+            const y_dot_dot = y - 2 * x_dot - mu_bar_over_R3 * y - mu_over_r3 * y;
+            const z_dot_dot = -mu_bar_over_R3 * z - mu_over_r3 * z;
+
+            return [x_dot, y_dot, z_dot, x_dot_dot, y_dot_dot, z_dot_dot];
+        }
+
+        function rk4_step(f, u, h) {
+            const k1 = f(u).map(val => h * val);
+            const u1 = u.map((val, i) => val + 0.5 * k1[i]);
+            
+            const k2 = f(u1).map(val => h * val);
+            const u2 = u.map((val, i) => val + 0.5 * k2[i]);
+
+            const k3 = f(u2).map(val => h * val);
+            const u3 = u.map((val, i) => val + k3[i]);
+
+            const k4 = f(u3).map(val => h * val);
+
+            return u.map((val, i) => val + (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6.0);
+        }
+
+        function simulate_trajectory(u0, t_span, h) {
+            const [t_start, t_end] = t_span;
+            const num_steps = Math.ceil((t_end - t_start) / h);
+            const trajectory = [u0];
+            let u_current = u0;
+
+            for (let i = 0; i < num_steps; i++) {
+                const u_next = rk4_step(three_body_eom, u_current, h);
+                trajectory.push(u_next);
+                u_current = u_next;
+                if (Math.sqrt(u_next[0]**2 + u_next[1]**2 + u_next[2]**2) > 10) break; // Increased cutoff
+            }
+            return trajectory;
+        }
+
+        // --- Plotting Logic ---
+        function plot_trajectory(trajectory) {
+            const x_hist = trajectory.map(state => state[0]);
+            const y_hist = trajectory.map(state => state[1]);
+            const z_hist = trajectory.map(state => state[2]);
+            const speeds = trajectory.map(state => Math.sqrt(state[3]**2 + state[4]**2 + state[5]**2));
+
+            const earth_pos = [-MU_UNIT, 0, 0];
+            const moon_pos = [1 - MU_UNIT, 0, 0];
+
+            const trace = {
+                x: x_hist, y: y_hist, z: z_hist,
+                mode: 'lines', type: 'scatter3d', name: 'Trajectory',
+                line: { color: speeds, colorscale: 'Viridis', width: 4, colorbar: { title: 'Speed' } }
+            };
+            const earth = {
+                x: [earth_pos[0]], y: [earth_pos[1]], z: [earth_pos[2]],
+                mode: 'markers', type: 'scatter3d', name: 'Earth', marker: { color: '#3b82f6', size: 8 }
+            };
+            const moon = {
+                x: [moon_pos[0]], y: [moon_pos[1]], z: [moon_pos[2]],
+                mode: 'markers', type: 'scatter3d', name: 'Moon', marker: { color: '#9ca3af', size: 4 }
+            };
+
+            const layout = {
+                title: 'Satellite Trajectory', showlegend: true,
+                paper_bgcolor: '#1f2937', plot_bgcolor: '#1f2937',
+                font: { color: '#f3f4f6' },
+                scene: {
+                    xaxis: { title: 'x', backgroundcolor: '#111827', gridcolor: '#4b5563', zerolinecolor: '#4b5563' },
+                    yaxis: { title: 'y', backgroundcolor: '#111827', gridcolor: '#4b5563', zerolinecolor: '#4b5563' },
+                    zaxis: { title: 'z', backgroundcolor: '#111827', gridcolor: '#4b5563', zerolinecolor: '#4b5563' },
+                    camera: { eye: {x: 1.5, y: 1.5, z: 1.2} }
+                },
+                margin: { l: 0, r: 0, b: 0, t: 40 }
+            };
+
+            Plotly.newPlot(plotDiv, [trace, earth, moon], layout, {responsive: true});
+        }
+        
+        // --- Helper function to debounce function calls ---
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        // --- Main Execution ---
+        function run() {
+            runButton.textContent = "Simulating...";
+            runButton.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    const u0 = [
+                        parseFloat(document.getElementById('x0-value').value),
+                        parseFloat(document.getElementById('y0-value').value),
+                        parseFloat(document.getElementById('z0-value').value),
+                        parseFloat(document.getElementById('vx0-value').value),
+                        parseFloat(document.getElementById('vy0-value').value),
+                        parseFloat(document.getElementById('vz0-value').value)
+                    ];
+                    const t_span = [0.0, parseFloat(document.getElementById('t_end-value').value)];
+                    const h = parseFloat(document.getElementById('h_step-value').value);
+
+                    const trajectory = simulate_trajectory(u0, t_span, h);
+                    plot_trajectory(trajectory);
+                } catch (error) {
+                    console.error("Simulation failed:", error);
+                    alert("An error occurred during the simulation. Check the console for details.");
+                } finally {
+                    runButton.textContent = "Run Simulation";
+                    runButton.disabled = false;
+                }
+            }, 50);
+        }
+
+        // Create a debounced version of the run function
+        const debouncedRun = debounce(run, 300);
+
+        // --- Input Synchronization ---
+        const paramIds = ['x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 't_end', 'h_step'];
+        paramIds.forEach(id => {
+            const slider = document.getElementById(id);
+            const numberInput = document.getElementById(id + '-value');
+
+            // When slider value changes, update the number input
+            slider.addEventListener('input', () => {
+                numberInput.value = slider.value;
+                debouncedRun();
+            });
+
+            // When number input value changes, update the slider
+            numberInput.addEventListener('input', () => {
+                // Only update if the value is valid to avoid breaking the slider.
+                // It will clamp the slider value if the number is outside the slider's range.
+                if (numberInput.checkValidity()) {
+                    slider.value = numberInput.value;
+                    debouncedRun();
+                }
+            });
+        });
+
+        // The button still triggers an immediate run
+        runButton.addEventListener('click', run);
+
+        // Initial run on page load
+        run();
+
+    </script>
+</body>
+</html>
